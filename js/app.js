@@ -3,15 +3,36 @@ $(document).foundation();
 // Slider Javascript
 
 // define globals
-var onScreen = 2;
+
+var onScreen;
 var currentIndex = 0;
 var slides = [];
 
+
+// decide if 1 or 2 items should show based on viewport
+var testBreakpoint = function(){
+	if(Foundation.MediaQuery.atLeast('large')){
+		onScreen = 2;
+	} else {
+		onScreen = 1;
+	}
+}
+
+testBreakpoint();
+
+$(window).on('changed.zf.mediaquery', function(event, newSize, oldSize){
+	testBreakpoint();
+
+	slider.cycleSlides();
+
+});
+
+
 // define slider
 var Slider = function(){
-	
+
 	var self = this;
-	
+
 	self.currentSlide = $(slides).eq(currentIndex);
 	self.nextButton = $('.next');
 	self.prevButton = $('.prev');
@@ -25,8 +46,9 @@ var Slider = function(){
 	self.cycleSlides = function(){
 		for (slide in slides){
 			slides[slide].hide();
-			
-			if (slide == currentIndex || slide == currentIndex + (onScreen - 1)){
+
+			// show slides if in range of index
+			if (slide >= currentIndex && slide <= currentIndex + (onScreen - 1)){
 				slides[slide].fadeIn();
 			}
 		}
@@ -34,8 +56,8 @@ var Slider = function(){
 
 	// next function
 	self.next = function(){
-		if (currentIndex < slides.length - 1){
-			currentIndex++;
+		if (currentIndex + onScreen <= slides.length - 1){
+			currentIndex += onScreen;
 		} else {
 			currentIndex = 0;
 		}
@@ -45,7 +67,7 @@ var Slider = function(){
 	// previous function
 	self.prev = function(){
 		if (currentIndex > 0){
-			currentIndex--;
+			currentIndex -= onScreen;
 		} else {
 			currentIndex = slides.length - 1;
 		}
@@ -60,7 +82,7 @@ var Slider = function(){
 	self.init = function(){
 		self.addSlides();
 		self.cycleSlides();
-		
+
 		// apply bindings to buttons
 		self.prevButton.click(function(){
 			self.prev();
@@ -74,9 +96,5 @@ var Slider = function(){
 
 }
 
-
 var slider = new Slider();
-
-slider.init();
-
-
+slider.init()
