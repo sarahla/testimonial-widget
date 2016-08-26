@@ -11,7 +11,7 @@ var slides = [];
 
 // decide if 1 or 2 items should show based on viewport
 var testBreakpoint = function(){
-	if(Foundation.MediaQuery.atLeast('large')){
+	if(Foundation.MediaQuery.atLeast('medium')){
 		onScreen = 2;
 	} else {
 		onScreen = 1;
@@ -22,7 +22,6 @@ testBreakpoint();
 
 $(window).on('changed.zf.mediaquery', function(event, newSize, oldSize){
 	testBreakpoint();
-
 	slider.cycleSlides();
 
 });
@@ -46,11 +45,16 @@ var Slider = function(){
 	self.cycleSlides = function(){
 		for (slide in slides){
 			slides[slide].hide();
+			console.log(slide, currentIndex, onScreen);
 
 			// show slides if in range of index
 			if (slide >= currentIndex && slide <= currentIndex + (onScreen - 1)){
 				slides[slide].fadeIn();
 			}
+		}
+
+		if ( $('.slide:visible').length < onScreen ){
+			slides[slides.length - 2].fadeIn();
 		}
 	}
 
@@ -61,7 +65,6 @@ var Slider = function(){
 		} else {
 			currentIndex = 0;
 		}
-		console.log(currentIndex);
 	}
 
 	// previous function
@@ -71,11 +74,6 @@ var Slider = function(){
 		} else {
 			currentIndex = slides.length - 1;
 		}
-		console.log(currentIndex);
-	}
-
-	self.Slide = function(content){
-
 	}
 
 	// initialize slider
